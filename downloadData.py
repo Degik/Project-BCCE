@@ -29,8 +29,8 @@ train_set = scaler.fit_transform(train_set.values.reshape(-1, 1))
 test_set = scaler.fit_transform(test_set.values.reshape(-1, 1))
 
 # Convert numpy array to dataframe
-df_train = pd.DataFrame(train_set)
-df_test = pd.DataFrame(test_set)
+df_train = pd.DataFrame(train_set, columns = ['Close'],)
+df_test = pd.DataFrame(test_set, columns = ['Close'])
 
 # Save data normalized in csv
 df_train.to_csv(f'datasets/{symbol}_train_norm.csv', index = True)
