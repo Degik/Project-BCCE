@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 import IPython.display as display
 
 
-#HYPERPARAMS
+##HYPERPARAMS
 learning_rates = 0.001
 penality = 0.001
 epochs = 1000
@@ -24,16 +24,19 @@ data.convertToTensor()
 data.moveToGpu()
 data_loader_train, data_loader_test = data.createDataLoader()
 
-#Plot result
+# Plot result
 pathname = "models/test"
 os.makedirs(pathname, exist_ok=True)
 results = []
 list_loss_train = []
 list_loss_test = []
 
-#Net model
+# Net model
 model = NetMarket.LSTMNet()
 # Move model to GPU
+model = model.to("cuda:0")
+# Model to float type
+model = model.float()
 
 # Settings loss fuction and optmizer
 loss_function = nn.CrossEntropyLoss()
@@ -65,11 +68,12 @@ for epoch in range(epochs):
     avg_loss_train = total_loss / len(data_loader_train)
     ## END TRAIN
 
+    # TEST METRICS
     total_loss = 0
     total_correct = 0
     total_len_test = 0
 
-    ## TEST METRICS
+    ## TEST
     model.eval()
     for x, y_true in data_loader_test:
         # Forward pass
@@ -94,7 +98,7 @@ for epoch in range(epochs):
 #SAVE MODEL
 torch.save(model, f'{pathname}/model.pth')
     
-#Save plot loss
+# Save plot loss
 display.clear_output(wait=True)
 plt.plot(list_loss_train, label='Training Loss')
 plt.plot(list_loss_test, label = 'Test loss')
