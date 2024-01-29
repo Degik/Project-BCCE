@@ -18,16 +18,9 @@ def importDataset(file_name:str) -> pd.DataFrame:
 
 
 
-def get_20_business_days_back():
-    #today = "2023-12-22"
-    today = datetime.date.today()
-    business_day_20_back = pd.to_datetime(today) - BDay(33)
-    return business_day_20_back.strftime('%Y-%m-%d'), today
-
-def get_60_days_back():
-    today = datetime.date.today()
-    date_60_days_back = today - datetime.timedelta(days=55)
-    return date_60_days_back.strftime('%Y-%m-%d'), today
+def get_9_business_days_back(today:str):
+    business_day_20_back = pd.to_datetime(today) - BDay(9)
+    return business_day_20_back.strftime('%Y-%m-%d')
 
 # Normalize the data
 # All data will be convert inside the range [0, 1]
@@ -36,7 +29,6 @@ def normalizeData(train_set, val_set):
     train_set = scaler.fit_transform(train_set.values.reshape(-1, 1))
     val_set = scaler.fit_transform(val_set.values.reshape(-1, 1))
     return train_set, val_set
-
 
 # Create Sequences
 # Create for each row a sub list with 9 elemets for predict the 10

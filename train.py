@@ -12,7 +12,7 @@ import IPython.display as display
 ##HYPERPARAMS
 learning_rate = 0.0001
 penality = 0.0001
-epochs = 500
+epochs = 5000
 
 # PATH
 pathTrain = "datasets/BZ=F_train_norm.csv"
@@ -26,7 +26,7 @@ data.moveToGpu()
 data_loader_train, data_loader_val = data.createDataLoader(batch_train=64, batch_val=64)
 
 # Plot result
-pathname = "models/testNet32-16"
+pathname = "models/testNet32-16-5000-FullData"
 os.makedirs(pathname, exist_ok=True)
 results = []
 list_loss_train = []
@@ -89,17 +89,18 @@ for epoch in range(epochs):
 
     ## VAL
     model.eval()
-    for x, y_true in data_loader_val:
-        # Forward pass
-        predictions = model(x.unsqueeze(-1))
-        loss = loss_function(predictions, y_true.unsqueeze(-1))
+    with torch.no_grad():
+        for x, y_true in data_loader_val:
+            # Forward pass
+            predictions = model(x.unsqueeze(-1))
+            loss = loss_function(predictions, y_true.unsqueeze(-1))
 
-        total_loss += loss.item()
-        total_len_val += x.size(0)
+            total_loss += loss.item()
+            total_len_val += x.size(0)
 
-        distance = utls.euclidean_distance_loss(y_true.unsqueeze(-1), predictions)
-        val_distance.append(distance.item())
-    avg_loss_val = total_loss / len(data_loader_val)
+            distance = utls.euclidean_distance_loss(y_true.unsqueeze(-1), predictions)
+            val_distance.append(distance.item())
+        avg_loss_val = total_loss / len(data_loader_val)
 
     # distance mean
     mean_distance_val = statistics.mean(val_distance)

@@ -8,7 +8,7 @@ from sklearn.preprocessing import MinMaxScaler
 symbol = "BZ=F"
 #Take current day
 today= datetime.date.today()
-print(f"Downloading date for current day [{today}]")
+print(f"Downloading data for current day [{today}]")
 # Download data
 data = yf.download(symbol, 
                    start="1980-01-01", 
@@ -20,7 +20,7 @@ data = yf.download(symbol,
 data = data["Close"].dropna() # Remove all columns except "Close"
 
 # Split data into training and valing sets
-train_size = int(len(data) * 0.8)
+train_size = int(len(data) * 0.99)
 train_set = data[:train_size]
 val_set = data[train_size:]
 
