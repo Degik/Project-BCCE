@@ -3,6 +3,7 @@ import datetime
 import numpy as np
 import pandas as pd
 from pandas.tseries.offsets import BDay
+from sklearn.preprocessing import MinMaxScaler
 
 FEAT_COLS = ['Close']
 
@@ -27,6 +28,14 @@ def get_60_days_back():
     today = datetime.date.today()
     date_60_days_back = today - datetime.timedelta(days=55)
     return date_60_days_back.strftime('%Y-%m-%d'), today
+
+# Normalize the data
+# All data will be convert inside the range [0, 1]
+def normalizeData(train_set, test_set):
+    scaler = MinMaxScaler()
+    train_set = scaler.fit_transform(train_set.values.reshape(-1, 1))
+    test_set = scaler.fit_transform(test_set.values.reshape(-1, 1))
+    return train_set, test_set
 
 
 # Create Sequences

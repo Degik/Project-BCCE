@@ -1,14 +1,18 @@
-import pandas as pd
+import datetime
 import utils as utls
+import pandas as pd
 import yfinance as yf
 from sklearn.preprocessing import MinMaxScaler
 
 # Set symbol
 symbol = "BZ=F"
+#Take current day
+today= datetime.date.today()
+print(f"Downloading date for current day [{today}]")
 # Download data
 data = yf.download(symbol, 
                    start="1980-01-01", 
-                   end="2024-01-05", 
+                   end=today,
                    threads = True
 )
 
@@ -24,10 +28,8 @@ test_set = data[train_size:]
 train_set.to_csv(f'datasets/{symbol}_train.csv', index = True)
 test_set.to_csv(f'datasets/{symbol}_test.csv', index = True)
 
-# Normalize the data
-scaler = MinMaxScaler()
-train_set = scaler.fit_transform(train_set.values.reshape(-1, 1))
-test_set = scaler.fit_transform(test_set.values.reshape(-1, 1))
+# Normalize data
+train_set, test_set = utls.normalizeData(train_set, test_set)
 
 # Convert numpy array to dataframe
 df_train = pd.DataFrame(train_set, columns = ['Close'],)
@@ -36,5 +38,3 @@ df_test = pd.DataFrame(test_set, columns = ['Close'])
 # Save data normalized in csv
 df_train.to_csv(f'datasets/{symbol}_train_norm.csv', index = True)
 df_test.to_csv(f'datasets/{symbol}_test_norm.csv', index = True)
-
-x, y = utls.prepare_data(train_set)
