@@ -3,15 +3,14 @@ import torch
 import NetMarket
 import LoadData
 import torch.nn as nn
-import torch.optim as optim
 import matplotlib.pyplot as plt
 import IPython.display as display
 
 
 ##HYPERPARAMS
-learning_rates = 0.001
+learning_rate = 0.001
 penality = 0.001
-epochs = 1000
+epochs = 500
 
 # PATH
 pathTrain = "datasets/BZ=F_train_norm.csv"
@@ -22,7 +21,7 @@ data = LoadData.Data(pathTrain, pathTest)
 # DATA: TENSOR, GPU, DATALOADER
 data.convertToTensor()
 data.moveToGpu()
-data_loader_train, data_loader_test = data.createDataLoader()
+data_loader_train, data_loader_test = data.createDataLoader(batch_train=128, batch_test=128)
 
 # Plot result
 pathname = "models/test"
@@ -35,12 +34,12 @@ list_loss_test = []
 model = NetMarket.LSTMNet()
 # Move model to GPU
 model = model.to("cuda:0")
-# Model to float type
-model = model.float()
+# Model to double type
+model = model.double()
 
 # Settings loss fuction and optmizer
-loss_function = nn.CrossEntropyLoss()
-optimizer = torch.optim.SGD(model.parameters(), lr=0.0001, weight_decay=penality)
+loss_function = nn.MSELoss()
+optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate, weight_decay=penality)
 
 # TRAINING LOOP
 model.train()  # Setting train evaluation
@@ -55,8 +54,8 @@ for epoch in range(epochs):
     model.train()
     for x, y_true in data_loader_train:
         # Forward pass
-        predictions = model(x)
-        loss = loss_function(predictions, y_true.long())
+        predictions = model(x.unsqueeze(-1))
+        loss = loss_function(predictions, y_true.unsqueeze(-1))
         
         # Backward pass e ottimizzazione
         optimizer.zero_grad()
@@ -77,8 +76,8 @@ for epoch in range(epochs):
     model.eval()
     for x, y_true in data_loader_test:
         # Forward pass
-        predictions = model(x)
-        loss = loss_function(predictions, y_true.long())
+        predictions = model(x.unsqueeze(-1))
+        loss = loss_function(predictions, y_true.unsqueeze(-1))
 
         total_loss += loss.item()
         total_len_test += x.size(0)
@@ -104,6 +103,7 @@ plt.plot(list_loss_train, label='Training Loss')
 plt.plot(list_loss_test, label = 'Test loss')
 plt.xlabel('Epoch')
 plt.ylabel('Loss')
+plt.ylim([0, 0.004])
 plt.title('Loss for Epoch')
 plt.legend()
 plt.savefig(f'{pathname}/Loss.png')
