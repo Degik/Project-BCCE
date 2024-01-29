@@ -1,4 +1,5 @@
 import pandas as pd
+import utils as utls
 import yfinance as yf
 from sklearn.preprocessing import MinMaxScaler
 
@@ -35,3 +36,5 @@ df_test = pd.DataFrame(test_set, columns = ['Close'])
 # Save data normalized in csv
 df_train.to_csv(f'datasets/{symbol}_train_norm.csv', index = True)
 df_test.to_csv(f'datasets/{symbol}_test_norm.csv', index = True)
+
+x, y = utls.prepare_data(train_set)
