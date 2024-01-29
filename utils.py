@@ -31,11 +31,11 @@ def get_60_days_back():
 
 # Normalize the data
 # All data will be convert inside the range [0, 1]
-def normalizeData(train_set, test_set):
+def normalizeData(train_set, val_set):
     scaler = MinMaxScaler()
     train_set = scaler.fit_transform(train_set.values.reshape(-1, 1))
-    test_set = scaler.fit_transform(test_set.values.reshape(-1, 1))
-    return train_set, test_set
+    val_set = scaler.fit_transform(val_set.values.reshape(-1, 1))
+    return train_set, val_set
 
 
 # Create Sequences
